@@ -144,8 +144,8 @@ upnpd() {
 		upnpd_write_bool use_stun 0 ext_perform_stun
 		upnpd_write_bool ipv6_disable $ipv6_disable
 		if [ "Z$FW" = "Zfw4" ]; then
-			echo "upnp_table_name=fw4"
-			echo "upnp_nat_table_name=fw4"
+			echo "upnp_table_name=miniupnpd_filter"
+			echo "upnp_nat_table_name=miniupnpd_nat"
 			echo "upnp_forward_chain=miniupnpd"
 			echo "upnp_nat_chain=prerouting_miniupnpd"
 			echo "upnp_nat_postrouting_chain=postrouting_miniupnpd"
@@ -204,8 +204,7 @@ upnpd() {
 
 stop_service() {
 	if [ "Z$FW" = "Zfw4" ]; then
-		local nftfile="/etc/nftables.d/80-miniupnpd.nft"
-		[ -f "$nftfile" ] && rm -f "$nftfile"
+		$NFT_SCRIPTS_DIR/nft_removeall.sh 2>/dev/null
 		fw4 reload
 	else
 		iptables -t nat -F MINIUPNPD 2>/dev/null

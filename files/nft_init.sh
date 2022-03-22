@@ -5,30 +5,71 @@
 # 'add' doesn't raise an error if the object already exists. 'create' does.
 #
 
+. $(dirname "$0")/miniupnpd_functions.sh
+
+$NFT --check list table inet $TABLE > /dev/null 2>&1
+if [ $? -eq "0" ]
+then
+echo "Table $TABLE already exists"
+exit 0
+fi
+
 echo "Creating nftables structure"
 
-cat >> /etc/nftables.d/80-miniupnpd.nft <<EOF
-# Hook fw4 forward
-chain forward {
-    jump miniupnpd
+cat > /tmp/miniupnpd.nft <<EOF
+table inet $TABLE {
+    chain forward {
+        type filter hook forward priority -25;
+        policy accept;
+
+        # miniupnpd
+        jump $CHAIN
+
+        # Add other rules here
+    }
+
+    # miniupnpd
+    chain $CHAIN {
+    }
+
+EOF
+
+if [ "$TABLE" != "$NAT_TABLE" ]
+then
+cat >> /tmp/miniupnpd.nft <<EOF
 }
 
-# miniupnpd
-chain miniupnpd {
-}
+table inet $NAT_TABLE {
+EOF
+fi
 
-# Hook fw4 nat
-chain dstnat {
-    jump prerouting_miniupnpd
-}
+cat >> /tmp/miniupnpd.nft <<EOF
+    chain prerouting {
+        type nat hook prerouting priority -100;
+        policy accept;
 
-chain srcnat {
-    jump postrouting_miniupnpd
-}
+        # miniupnpd
+        jump $PREROUTING_CHAIN
 
-chain prerouting_miniupnpd {
-}
+        # Add other rules here
+    }
 
-chain postrouting_miniupnpd {
+    chain postrouting {
+        type nat hook postrouting priority 100;
+        policy accept;
+
+        # miniupnpd
+        jump $POSTROUTING_CHAIN
+
+        # Add other rules here
+    }
+
+    chain $PREROUTING_CHAIN {
+    }
+
+    chain $POSTROUTING_CHAIN {
+    }
 }
 EOF
+
+$NFT -f /tmp/miniupnpd.nft
