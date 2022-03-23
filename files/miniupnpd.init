@@ -143,13 +143,6 @@ upnpd() {
 		upnpd_write_bool igdv1 0 force_igd_desc_v1
 		upnpd_write_bool use_stun 0 ext_perform_stun
 		upnpd_write_bool ipv6_disable $ipv6_disable
-		if [ "Z$FW" = "Zfw4" ]; then
-			echo "upnp_table_name=miniupnpd_filter"
-			echo "upnp_nat_table_name=miniupnpd_nat"
-			echo "upnp_forward_chain=miniupnpd"
-			echo "upnp_nat_chain=prerouting_miniupnpd"
-			echo "upnp_nat_postrouting_chain=postrouting_miniupnpd"
-		fi
 
 		[ "$use_stun" -eq 0 ] || {
 			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"

@@ -116,9 +116,9 @@ endef
 define Package/miniupnpd-nftables/install
 	$(call Package/miniupnpd/install/Default,$1)
 	$(INSTALL_DIR) $(1)/usr/share/miniupnpd
-	$(INSTALL_BIN) ./files/miniupnpd_functions.sh $(1)/usr/share/miniupnpd/miniupnpd_functions.sh
-	$(INSTALL_BIN) ./files/nft_init.sh $(1)/usr/share/miniupnpd/nft_init.sh
-	$(INSTALL_BIN) ./files/nft_removeall.sh $(1)/usr/share/miniupnpd/nft_removeall.sh
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/etc/miniupnpd/miniupnpd_functions.sh $(1)/usr/share/miniupnpd/miniupnpd_functions.sh
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/etc/miniupnpd/nft_init.sh $(1)/usr/share/miniupnpd/nft_init.sh
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/etc/miniupnpd/nft_removeall.sh $(1)/usr/share/miniupnpd/nft_removeall.sh
 endef
 
 $(eval $(call BuildPackage,miniupnpd-iptables))
