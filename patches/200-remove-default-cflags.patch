@@ -1,7 +1,7 @@
 --- a/Makefile.linux
 +++ b/Makefile.linux
 @@ -25,16 +25,16 @@ CONFIG_OPTIONS ?= $(cat .configure.cache
- CONFIG_OPTIONS += --firewall=nftables
+ CONFIG_OPTIONS += --firewall=iptables
  #CFLAGS = -O -g -DDEBUG
  CFLAGS ?= -Os
 -CFLAGS += -fno-strict-aliasing
